@@ -21,26 +21,38 @@ offset = 0.2;
 //   Top Part
 
 color("red") {
+  topPart(beamADiameter, widthA, screwDiameter, hirthWidth, hirthHeight, snaps, thickness, offset);
+}
+
+
+//   Bottom Part
+
+color("green") {
+  bottomPart(beamADiameter, widthA, screwDiameter, thickness, offset);
+}
+
+// Main Modules
+module topPart(beamDiameter, width, screwDiameter, hirthWidth, hirthHeight, snaps, thickness, offset) {
   difference() {
-    ringPart(beamADiameter, widthA, thickness, 180);
+    ringPart(beamDiameter, width, thickness, 180);
     translate([0,0,-1]) {
-      linear_extrude(height=(widthA + offset)/2 + 1) {
+      linear_extrude(height=(width + offset)/2 + 1) {
         polygon(points=[
-          [-(beamADiameter/2 + 1.5 * thickness + offset),-1],
-          [-(beamADiameter/2 + 1.5 * thickness + offset),thickness + offset],
-          [-(beamADiameter/2 + thickness),thickness + offset],
-          [-(beamADiameter/2),offset],
-          [-(beamADiameter/2) + 1,offset],
-          [-(beamADiameter/2) + 1,-1],
-          [-(beamADiameter/2),-1]
+          [-(beamDiameter/2 + 1.5 * thickness + offset),-1],
+          [-(beamDiameter/2 + 1.5 * thickness + offset),thickness + offset],
+          [-(beamDiameter/2 + thickness),thickness + offset],
+          [-(beamDiameter/2),offset],
+          [-(beamDiameter/2) + 1,offset],
+          [-(beamDiameter/2) + 1,-1],
+          [-(beamDiameter/2),-1]
         ]);
       }
     }
   }
-  translate([0,beamADiameter/2 + thickness,0]) {
+  translate([0,beamDiameter/2 + thickness,0]) {
     union() {
-      screwPart(beamADiameter, widthA, beamADiameter/2 + thickness, hirthWidth + thickness);
-      translate([(beamADiameter + screwDiameter)/2 + hirthWidth + thickness,-1,widthA/2]) {
+      screwPart(beamDiameter, width, beamDiameter/2 + thickness, hirthWidth + thickness);
+      translate([(beamDiameter + screwDiameter)/2 + hirthWidth + thickness,-1,width/2]) {
         rotate([-90,0,0]) {
           singleDisc(snaps=10, d=2 * hirthWidth + screwDiameter, h=hirthHeight, ct=0, res=$fn, screw=screwDiameter/2, gpt=1, snapfree=0);
         }
@@ -48,63 +60,59 @@ color("red") {
     }
   }
   difference() {
-    cube([beamADiameter/2 + thickness, beamADiameter/2 + thickness, widthA]);
+    cube([beamDiameter/2 + thickness, beamDiameter/2 + thickness, width]);
     translate([0, 0, -1]) {
-      cylinder(d=beamADiameter, h=widthA + 2);
+      cylinder(d=beamDiameter, h=width + 2);
     }
   }
 
   // connector
-  rotate([0, 0, -angle(thickness, beamADiameter/2 + 1.5 * thickness)/2]) {
-    translate([-(beamADiameter/2 + 1.5 * thickness + offset),0,(widthA + offset)/2]) {
+  rotate([0, 0, -angle(thickness, beamDiameter/2 + 1.5 * thickness)/2]) {
+    translate([-(beamDiameter/2 + 1.5 * thickness + offset),0,(width + offset)/2]) {
       difference() {
-        cylinder(h=(widthA - offset)/2, d=3 * thickness + 2 * offset);
+        cylinder(h=(width - offset)/2, d=3 * thickness + 2 * offset);
         translate([0,0,-1]) {
-          cylinder(h=widthA/2 + 2, d = thickness + 2 * offset);
+          cylinder(h=width/2 + 2, d = thickness + 2 * offset);
         }
       }
     }
   }
 }
 
-
-//   Bottom Part
-
-color("green") {
+module bottomPart(beamDiameter, width, screwDiameter, thickness, offset) {
   difference() {
-    ringPart(beamADiameter, widthA, thickness, -180);
+    ringPart(beamDiameter, width, thickness, -180);
     // part from the connector
-    rotate([0, 0, -angle(thickness, beamADiameter/2 + 1.5 * thickness + offset)/2]) {
-      translate([-(beamADiameter/2 + 1.5 * thickness + offset),0,(widthA - offset)/2]) {
-        cylinder(h=(widthA + offset)/2 + 1, d=3 * thickness + 4 * offset);
+    rotate([0, 0, -angle(thickness, beamDiameter/2 + 1.5 * thickness + offset)/2]) {
+      translate([-(beamDiameter/2 + 1.5 * thickness + offset),0,(width - offset)/2]) {
+        cylinder(h=(width + offset)/2 + 1, d=3 * thickness + 4 * offset);
       }
     }
   }
-  screwPart(beamADiameter, widthA, thickness, hirthWidth + thickness);
+  screwPart(beamDiameter, width, thickness, hirthWidth + thickness);
 
   // connector
   union() {
-    rotate([0, 0, -angle(thickness, beamADiameter/2 + 1.5 * thickness + offset)/2]) {
-      translate([-(beamADiameter/2 + 1.5 * thickness + offset),0,0]) {
-        cylinder(h=widthA, d=thickness);
+    rotate([0, 0, -angle(thickness, beamDiameter/2 + 1.5 * thickness + offset)/2]) {
+      translate([-(beamDiameter/2 + 1.5 * thickness + offset),0,0]) {
+        cylinder(h=width, d=thickness);
       }
     }
-    linear_extrude(height=(widthA-offset)/2) {
+    linear_extrude(height=(width-offset)/2) {
       polygon(points=[
-        [-(beamADiameter/2 + 1.5 * thickness + offset),0],
-        [-(beamADiameter/2 + 1.5 * thickness + offset),thickness],
-        [-(beamADiameter/2 + thickness),thickness],
-        [-(beamADiameter/2),0]
+        [-(beamDiameter/2 + 1.5 * thickness + offset),0],
+        [-(beamDiameter/2 + 1.5 * thickness + offset),thickness],
+        [-(beamDiameter/2 + thickness),thickness],
+        [-(beamDiameter/2),0]
       ]);
     }
   }
 }
 
-
 // Functions
 function angle(thickness, total_outer_radius) = atan(thickness / (total_outer_radius));
 
-// HelperModules
+// Helper Modules
 module ringPart(beamDiameter, width, thickness, angle=360) {
   difference() {
     if (angle==360) {
@@ -120,17 +128,17 @@ module ringPart(beamDiameter, width, thickness, angle=360) {
 
 module screwPart(beamDiameter, width, thickness, stdThickness) {
   rotate([90, 0, 0]) {
-    translate([(beamADiameter + screwDiameter) / 2 + stdThickness, widthA/2, 0]) {
+    translate([(beamDiameter + screwDiameter) / 2 + stdThickness, width/2, 0]) {
       difference() {
         union() {
           cylinder(d=screwDiameter + 2 * stdThickness, h=thickness);
           linear_extrude(height=thickness) {
             polygon(points=[
-              [-(screwDiameter / 2 + stdThickness), widthA/2],
-              [-(screwDiameter / 2), widthA/2],
+              [-(screwDiameter / 2 + stdThickness), width/2],
+              [-(screwDiameter / 2), width/2],
               [screwDiameter / 2 + stdThickness, 0],
-              [-(screwDiameter / 2), -widthA/2],
-              [-(screwDiameter / 2 + stdThickness), -widthA/2]
+              [-(screwDiameter / 2), -width/2],
+              [-(screwDiameter / 2 + stdThickness), -width/2]
             ]);
           }
         }
