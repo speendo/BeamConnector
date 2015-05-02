@@ -140,7 +140,7 @@ module ringPart(beamDiameter, width, thickness, angle=360) {
   }
 }
 
-module screwPart(beamDiameter, width, thickness, stdThickness, offset) {
+module screwPart(beamDiameter, width, thickness, stdThickness) {
   rotate([90, 0, 0]) {
     translate([(beamDiameter + screwDiameter) / 2 + stdThickness, width/2, 0]) {
       difference() {
