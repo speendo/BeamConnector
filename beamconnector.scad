@@ -39,8 +39,8 @@ color("red") {
   }
   translate([0,beamADiameter/2 + thickness,0]) {
     union() {
-      screwPart(beamADiameter, widthA, beamADiameter/2 + thickness, max(thickness,hirthWidth));
-      translate([(beamADiameter + screwDiameter)/2 + max(thickness,hirthWidth),-1,widthA/2]) {
+      screwPart(beamADiameter, widthA, beamADiameter/2 + thickness, hirthWidth + thickness);
+      translate([(beamADiameter + screwDiameter)/2 + hirthWidth + thickness,-1,widthA/2]) {
         rotate([-90,0,0]) {
           singleDisc(snaps=10, d=2 * hirthWidth + screwDiameter, h=hirthHeight, ct=0, res=$fn, screw=screwDiameter/2, gpt=1, snapfree=0);
         }
@@ -80,7 +80,7 @@ color("green") {
       }
     }
   }
-  screwPart(beamADiameter, widthA, thickness, max(thickness, hirthWidth));
+  screwPart(beamADiameter, widthA, thickness, hirthWidth + thickness);
 
   // connector
   union() {
