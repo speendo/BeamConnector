@@ -21,18 +21,39 @@ offset = 0.2;
 //   Top Part
 
 color("red") {
-  topPart(beamADiameter, widthA, screwDiameter, hirthWidth, hirthHeight, snaps, thickness, offset);
+  topPartFemaleHirth(beamADiameter, widthA, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset);
 }
 
 
 //   Bottom Part
-
 color("green") {
-  bottomPart(beamADiameter, widthA, screwDiameter, thickness, offset);
+//  bottomPart(beamADiameter, widthA, screwDiameter, hirthWidth, thickness, offset);
 }
 
 // Main Modules
-module topPart(beamDiameter, width, screwDiameter, hirthWidth, hirthHeight, snaps, thickness, offset) {
+module topPartMaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset) {
+  union() {
+    topPartNoHirth(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset);
+    translate([(beamDiameter + screwDiameter)/2 + hirthWidth + thickness,beamDiameter/2 + thickness - 1,width/2]) {
+      rotate([-90,0,0]) {
+        snapsWithPlate(snaps, hirthHeight, 0, 2 * hirthWidth + screwDiameter, $fn, 0, 1, screwDiameter/2);
+      }
+    }
+  }
+}
+
+module topPartFemaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset) {
+  difference() {
+    topPartNoHirth(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset);
+    translate([(beamDiameter + screwDiameter)/2 + hirthWidth + thickness,beamDiameter/2 + thickness + 1,width/2]) {
+      rotate([90,0,0]) {
+        snapsWithPlate(snaps, hirthHeight + offset, 0, 2 * (hirthWidth + offset) + screwDiameter, $fn, 0, 1, screwDiameter/2);
+      }
+    }
+  }
+}
+
+module topPartNoHirth(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset) {
   difference() {
     ringPart(beamDiameter, width, thickness, 180);
     translate([0,0,-1]) {
@@ -50,14 +71,7 @@ module topPart(beamDiameter, width, screwDiameter, hirthWidth, hirthHeight, snap
     }
   }
   translate([0,beamDiameter/2 + thickness,0]) {
-    union() {
-      screwPart(beamDiameter, width, beamDiameter/2 + thickness, hirthWidth + thickness);
-      translate([(beamDiameter + screwDiameter)/2 + hirthWidth + thickness,-1,width/2]) {
-        rotate([-90,0,0]) {
-          singleDisc(snaps=10, d=2 * hirthWidth + screwDiameter, h=hirthHeight, ct=0, res=$fn, screw=screwDiameter/2, gpt=1, snapfree=0);
-        }
-      }
-    }
+    screwPart(beamDiameter, width, beamDiameter/2 + thickness, hirthWidth + thickness);
   }
   difference() {
     cube([beamDiameter/2 + thickness, beamDiameter/2 + thickness, width]);
@@ -79,7 +93,7 @@ module topPart(beamDiameter, width, screwDiameter, hirthWidth, hirthHeight, snap
   }
 }
 
-module bottomPart(beamDiameter, width, screwDiameter, thickness, offset) {
+module bottomPart(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset) {
   difference() {
     ringPart(beamDiameter, width, thickness, -180);
     // part from the connector
@@ -126,7 +140,7 @@ module ringPart(beamDiameter, width, thickness, angle=360) {
   }
 }
 
-module screwPart(beamDiameter, width, thickness, stdThickness) {
+module screwPart(beamDiameter, width, thickness, stdThickness, offset) {
   rotate([90, 0, 0]) {
     translate([(beamDiameter + screwDiameter) / 2 + stdThickness, width/2, 0]) {
       difference() {
@@ -255,17 +269,4 @@ module snapsWithPlate(snaps, h, ct, d, res, snapfree, gpt, screw) {
       cylinder(h = h + gpt + 2, r = screw);
     }
   }
-}
-
-module singleDisc(
-  snaps = Snaps,
-  d = Diameter,
-  h = SnapHeight,
-  ct = CutTip,
-  res = Resolution,
-  screw = ScrewHole,
-  gpt = GroundPlateThickness,
-  snapfree = SnapFreeArea
-) {
-  snapsWithPlate(snaps, h, ct, d, res, snapfree, gpt, screw);
 }
