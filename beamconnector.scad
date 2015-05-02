@@ -34,7 +34,7 @@ color("green") {
 module topPartMaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset) {
   union() {
     topPartNoHirth(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset);
-    translate([(beamDiameter + screwDiameter)/2 + hirthWidth + thickness,beamDiameter/2 + thickness - 1,width/2]) {
+    translate([(beamDiameter + screwDiameter)/2 + thickness,beamDiameter/2 + thickness - 1,width/2]) {
       rotate([-90,0,0]) {
         snapsWithPlate(snaps, hirthHeight, 0, 2 * hirthWidth + screwDiameter, $fn, 0, 1, screwDiameter/2);
       }
@@ -45,7 +45,7 @@ module topPartMaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, scr
 module topPartFemaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset) {
   difference() {
     topPartNoHirth(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset);
-    translate([(beamDiameter + screwDiameter)/2 + hirthWidth + thickness,beamDiameter/2 + thickness + 1,width/2]) {
+    translate([(beamDiameter + screwDiameter)/2 + thickness,beamDiameter/2 + thickness + 1,width/2]) {
       rotate([90,0,0]) {
         snapsWithPlate(snaps, hirthHeight + offset, 0, 2 * (hirthWidth + offset) + screwDiameter, $fn, 0, 1, screwDiameter/2);
       }
@@ -55,70 +55,81 @@ module topPartFemaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, s
 
 module topPartNoHirth(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset) {
   difference() {
-    ringPart(beamDiameter, width, thickness, 180);
-    translate([0,0,-1]) {
-      linear_extrude(height=(width + offset)/2 + 1) {
-        polygon(points=[
-          [-(beamDiameter/2 + 1.5 * thickness + offset),-1],
-          [-(beamDiameter/2 + 1.5 * thickness + offset),thickness + offset],
-          [-(beamDiameter/2 + thickness),thickness + offset],
-          [-(beamDiameter/2),offset],
-          [-(beamDiameter/2) + 1,offset],
-          [-(beamDiameter/2) + 1,-1],
-          [-(beamDiameter/2),-1]
-        ]);
-      }
-    }
-  }
-  translate([0,beamDiameter/2 + thickness,0]) {
-    screwPart(beamDiameter, width, beamDiameter/2 + thickness, hirthWidth + thickness);
-  }
-  difference() {
-    cube([beamDiameter/2 + thickness, beamDiameter/2 + thickness, width]);
-    translate([0, 0, -1]) {
-      cylinder(d=beamDiameter, h=width + 2);
-    }
-  }
-
-  // connector
-  rotate([0, 0, -angle(thickness, beamDiameter/2 + 1.5 * thickness)/2]) {
-    translate([-(beamDiameter/2 + 1.5 * thickness + offset),0,(width + offset)/2]) {
+    union() {
       difference() {
-        cylinder(h=(width - offset)/2, d=3 * thickness + 2 * offset);
+        ringPartOuter(beamDiameter, width, thickness, 180);
         translate([0,0,-1]) {
-          cylinder(h=width/2 + 2, d = thickness + 2 * offset);
+          linear_extrude(height=(width + offset)/2 + 1) {
+            polygon(points=[
+              [-(beamDiameter/2 + 1.5 * thickness + offset),-1],
+              [-(beamDiameter/2 + 1.5 * thickness + offset),thickness + offset],
+              [-(beamDiameter/2 + thickness),thickness + offset],
+              [-(beamDiameter/2),offset],
+              [-(beamDiameter/2) + 1,offset],
+              [-(beamDiameter/2) + 1,-1],
+              [-(beamDiameter/2),-1]
+            ]);
+          }
         }
       }
+      translate([0,beamDiameter/2 + thickness,0]) {
+        screwPart(beamDiameter, width, beamDiameter/2 + thickness, thickness, hirthWidth);
+      }
+      difference() {
+        cube([beamDiameter/2 + thickness, beamDiameter/2 + thickness, width]);
+      }
+
+      // connector
+      rotate([0, 0, -angle(thickness, beamDiameter/2 + 1.5 * thickness)/2]) {
+        translate([-(beamDiameter/2 + 1.5 * thickness + offset),0,(width + offset)/2]) {
+          difference() {
+            cylinder(h=(width - offset)/2, d=3 * thickness + 2 * offset);
+            translate([0,0,-1]) {
+              cylinder(h=width/2 + 2, d = thickness + 2 * offset);
+            }
+          }
+        }
+      }
+    }
+    translate([0, 0, -1]) {
+      cylinder(d=beamDiameter, h=width + 2);
     }
   }
 }
 
 module bottomPart(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset) {
   difference() {
-    ringPart(beamDiameter, width, thickness, -180);
-    // part from the connector
-    rotate([0, 0, -angle(thickness, beamDiameter/2 + 1.5 * thickness + offset)/2]) {
-      translate([-(beamDiameter/2 + 1.5 * thickness + offset),0,(width - offset)/2]) {
-        cylinder(h=(width + offset)/2 + 1, d=3 * thickness + 4 * offset);
+    union() {
+      difference() {
+        ringPartOuter(beamDiameter, width, thickness, -180);
+        // part from the connector
+        rotate([0, 0, -angle(thickness, beamDiameter/2 + 1.5 * thickness + offset)/2]) {
+          translate([-(beamDiameter/2 + 1.5 * thickness + offset),0,(width - offset)/2]) {
+            cylinder(h=(width + offset)/2 + 1, d=3 * thickness + 4 * offset);
+          }
+        }
       }
-    }
-  }
-  screwPart(beamDiameter, width, thickness, hirthWidth + thickness);
+      screwPart(beamDiameter, width, thickness, thickness, hirthWidth);
 
-  // connector
-  union() {
-    rotate([0, 0, -angle(thickness, beamDiameter/2 + 1.5 * thickness + offset)/2]) {
-      translate([-(beamDiameter/2 + 1.5 * thickness + offset),0,0]) {
-        cylinder(h=width, d=thickness);
+      // connector
+      union() {
+        rotate([0, 0, -angle(thickness, beamDiameter/2 + 1.5 * thickness + offset)/2]) {
+          translate([-(beamDiameter/2 + 1.5 * thickness + offset),0,0]) {
+            cylinder(h=width, d=thickness);
+          }
+        }
+        linear_extrude(height=(width-offset)/2) {
+          polygon(points=[
+            [-(beamDiameter/2 + 1.5 * thickness + offset),0],
+            [-(beamDiameter/2 + 1.5 * thickness + offset),thickness],
+            [-(beamDiameter/2 + thickness),thickness],
+            [-(beamDiameter/2),0]
+          ]);
+        }
       }
     }
-    linear_extrude(height=(width-offset)/2) {
-      polygon(points=[
-        [-(beamDiameter/2 + 1.5 * thickness + offset),0],
-        [-(beamDiameter/2 + 1.5 * thickness + offset),thickness],
-        [-(beamDiameter/2 + thickness),thickness],
-        [-(beamDiameter/2),0]
-      ]);
+    translate([0, 0, -1]) {
+      cylinder(d=beamDiameter, h=width + 2);
     }
   }
 }
@@ -127,25 +138,20 @@ module bottomPart(beamDiameter, width, screwDiameter, hirthWidth, thickness, off
 function angle(thickness, total_outer_radius) = atan(thickness / (total_outer_radius));
 
 // Helper Modules
-module ringPart(beamDiameter, width, thickness, angle=360) {
-  difference() {
-    if (angle==360) {
-      cylinder(d=beamDiameter + 2 * thickness, h=width);
-    } else {
-      pie((beamDiameter + 2 * thickness) / 2, angle, width);
-    }
-    translate([0, 0, -1]) {
-      cylinder(d=beamDiameter, h=width + 2);
-    }
+module ringPartOuter(beamDiameter, width, thickness, angle=360) {
+  if (angle==360) {
+    cylinder(d=beamDiameter + 2 * thickness, h=width);
+  } else {
+    pie((beamDiameter + 2 * thickness) / 2, angle, width);
   }
 }
 
-module screwPart(beamDiameter, width, thickness, stdThickness) {
+module screwPart(beamDiameter, width, thickness, stdThickness, hirthWidth) {
   rotate([90, 0, 0]) {
     translate([(beamDiameter + screwDiameter) / 2 + stdThickness, width/2, 0]) {
       difference() {
         union() {
-          cylinder(d=screwDiameter + 2 * stdThickness, h=thickness);
+          cylinder(d=screwDiameter + 2 * (stdThickness + hirthWidth), h=thickness);
           linear_extrude(height=thickness) {
             polygon(points=[
               [-(screwDiameter / 2 + stdThickness), width/2],
