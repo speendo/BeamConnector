@@ -12,22 +12,10 @@ screwDiameter = 3;
 thickness = 2;
 
 hirthWidth = 5;
-hirthHeight = 3;
+hirthHeight = 4;
 snaps = 10;
 
 offset = 0.2;
-
-// Part A
-//   Top Part
-color("red") {
-  topPartMaleHirth(beamADiameter, widthA, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset);
-}
-
-
-//   Bottom Part
-color("green") {
-  bottomPart(beamADiameter, widthA, screwDiameter, hirthWidth, thickness, offset);
-}
 
 // Main Modules
 module topPartMaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset) {
@@ -90,8 +78,8 @@ module topPartNoHirth(beamDiameter, width, screwDiameter, hirthWidth, thickness,
         }
       }
     }
-    translate([0, 0, -(offset + 1)]) {
-      cylinder(d=beamDiameter, h=width + 2 * offset + 2);
+    translate([0, 0, -(width + offset + 1)]) {
+      cylinder(d=beamDiameter, h=width + 2 * (width + offset) + 2);
     }
   }
 }
@@ -127,8 +115,8 @@ module bottomPart(beamDiameter, width, screwDiameter, hirthWidth, thickness, off
         }
       }
     }
-    translate([0, 0, -(offset + 1)]) {
-      cylinder(d=beamDiameter, h=width + 2 * offset + 2);
+    translate([0, 0, -(width + offset + 1)]) {
+      cylinder(d=beamDiameter, h=width +  2 * (width + offset) + 2);
     }
   }
 }
@@ -166,6 +154,36 @@ module screwPart(beamDiameter, width, thickness, stdThickness, hirthWidth, offse
         }
       }
     }
+  }
+}
+
+// Example Modules
+module completeExample(beamADiameter, widthA, beamBDiameter, widthB, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset) {
+  translate([-((beamADiameter + screwDiameter)/2 + thickness),-((beamADiameter + offset)/2 + thickness),-widthA/2]) {
+    exampleMalePart(beamADiameter, widthA, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset);
+  }
+  rotate([180,180 - 360/snaps,0]) {
+    translate([-((beamBDiameter + screwDiameter)/2 + thickness),-((beamBDiameter + offset)/2 + thickness),-widthB/2]) {
+      exampleFemalePart(beamBDiameter, widthB, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset);
+    }
+  }
+}
+
+module exampleFemalePart(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset) {
+  color("orange") {
+    topPartFemaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset);
+  }
+  color("yellow") {
+    bottomPart(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset);
+  }
+}
+
+module exampleMalePart(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset) {
+  color("Purple") {
+    topPartMaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset);
+  }
+  color("Violet") {
+    bottomPart(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset);
   }
 }
 
@@ -275,3 +293,17 @@ module snapsWithPlate(snaps, h, ct, d, res, snapfree, gpt, screw) {
     }
   }
 }
+
+// Example
+completeExample(
+  beamADiameter,
+  widthA,
+  beamBDiameter,
+  widthB,
+  hirthWidth,
+  hirthHeight,
+  snaps,
+  screwDiameter,
+  thickness=3,
+  offset=2
+);
