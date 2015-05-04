@@ -1,7 +1,7 @@
 // Beamconnector
 $fn = 200;
 
-tube = "A";
+tube = "B";
 part = "top";
 
 female = false;
@@ -27,7 +27,7 @@ offset = 0.2;
 module topPartMaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, screwHeadDiameter, thickness, offset) {
   union() {
     topPartNoHirth(beamDiameter, width, screwDiameter, screwHeadDiameter, hirthWidth, thickness, offset);
-    translate([(beamDiameter + max(hirthWidth, screwDiameter, screwHeadDiameter))/2 + thickness,beamDiameter/2 + thickness - 1,width/2]) {
+    translate([(beamDiameter + max(screwDiameter, screwHeadDiameter))/2 + thickness,beamDiameter/2 + thickness - 1,width/2]) {
       rotate([-90,0,0]) {
         snapsWithPlate(snaps, hirthHeight, 0, hirthWidth, $fn, 0, 1, screwDiameter/2);
       }
@@ -38,7 +38,7 @@ module topPartMaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, scr
 module topPartFemaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, screwHeadDiameter, thickness, offset) {
   difference() {
     topPartNoHirth(beamDiameter, width, screwDiameter, screwHeadDiameter, hirthWidth, thickness, offset);
-    translate([(beamDiameter + max(hirthWidth, screwDiameter, screwHeadDiameter))/2 + thickness,beamDiameter/2 + thickness + 1,width/2]) {
+    translate([(beamDiameter + max(screwDiameter, screwHeadDiameter))/2 + thickness,beamDiameter/2 + thickness + 1,width/2]) {
       rotate([90,0,0]) {
         snapsWithPlate(snaps, hirthHeight + offset, 0, hirthWidth + 2 * offset, $fn, 0, 1, screwDiameter/2);
       }
@@ -141,17 +141,17 @@ module ringPartOuter(beamDiameter, width, thickness, angle=360) {
 
 module screwPart(beamDiameter, width, screwDiameter, screwHeadDiameter, thickness, stdThickness, hirthWidth, offset) {
   rotate([90, 0, 0]) {
-    translate([(beamDiameter + max(hirthWidth, screwDiameter, screwHeadDiameter)) / 2 + stdThickness, width/2, 0]) {
+    translate([(beamDiameter + max(screwDiameter, screwHeadDiameter)) / 2 + stdThickness, width/2, 0]) {
       difference() {
         union() {
           cylinder(d=max(hirthWidth, screwDiameter, screwHeadDiameter) + 2 * (stdThickness + offset), h=thickness);
           linear_extrude(height=thickness) {
             polygon(points=[
-              [-(max(hirthWidth, screwDiameter, screwHeadDiameter) / 2 + stdThickness), width/2],
-              [-(max(hirthWidth, screwDiameter, screwHeadDiameter) / 2), width/2],
-              [max(hirthWidth, screwDiameter, screwHeadDiameter) / 2 + stdThickness + offset, 0],
-              [-(max(hirthWidth, screwDiameter, screwHeadDiameter) / 2), -width/2],
-              [-(max(hirthWidth, screwDiameter, screwHeadDiameter) / 2 + stdThickness), -width/2]
+              [-(max(screwDiameter, screwHeadDiameter) / 2 + stdThickness), width/2],
+              [-(max(screwDiameter, screwHeadDiameter) / 2), width/2],
+              [max(screwDiameter, screwHeadDiameter) / 2 + stdThickness + offset, 0],
+              [-(max(screwDiameter, screwHeadDiameter) / 2), -width/2],
+              [-(max(screwDiameter, screwHeadDiameter) / 2 + stdThickness), -width/2]
             ]);
           }
         }
