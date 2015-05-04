@@ -2,7 +2,7 @@
 $fn = 200;
 
 tube = "B";
-part = "top";
+part = "both";
 
 female = false;
 
@@ -192,7 +192,7 @@ module printPart(part, female, beamDiameter, width, hirthWidth, hirthHeight, sna
       printTopPart(female, beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, screwHeadDiameter, thickness, offset);
     }
     translate([0,-(thickness + offset),0]) {
-      bottomPart(beamDiameter, width, screwDiameter, screwHeadDiameter, hirthWidth, thickness, offset);
+      printBottomPart(beamDiameter, width, screwDiameter, screwHeadDiameter, hirthWidth, thickness, offset);
     }
   }
 }
