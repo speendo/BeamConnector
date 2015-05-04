@@ -7,7 +7,8 @@ beamBDiameter = 30;
 widthA = 20;
 widthB = 8;
 
-screwDiameter = 3;
+screwDiameter = 2;
+screwHeadDiameter = 5;
 
 thickness = 2;
 
@@ -18,10 +19,10 @@ snaps = 10;
 offset = 0.2;
 
 // Main Modules
-module topPartMaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset) {
+module topPartMaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, screwHeadDiameter, thickness, offset) {
   union() {
-    topPartNoHirth(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset);
-    translate([(beamDiameter + screwDiameter)/2 + thickness,beamDiameter/2 + thickness - 1,width/2]) {
+    topPartNoHirth(beamDiameter, width, screwDiameter, screwHeadDiameter, hirthWidth, thickness, offset);
+    translate([(beamDiameter + max(screwDiameter, screwHeadDiameter))/2 + thickness,beamDiameter/2 + thickness - 1,width/2]) {
       rotate([-90,0,0]) {
         snapsWithPlate(snaps, hirthHeight, 0, 2 * hirthWidth + screwDiameter, $fn, 0, 1, screwDiameter/2);
       }
@@ -29,10 +30,10 @@ module topPartMaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, scr
   }
 }
 
-module topPartFemaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset) {
+module topPartFemaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, screwHeadDiameter, thickness, offset) {
   difference() {
-    topPartNoHirth(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset);
-    translate([(beamDiameter + screwDiameter)/2 + thickness,beamDiameter/2 + thickness + 1,width/2]) {
+    topPartNoHirth(beamDiameter, width, screwDiameter, screwHeadDiameter, hirthWidth, thickness, offset);
+    translate([(beamDiameter + max(screwDiameter, screwHeadDiameter))/2 + thickness,beamDiameter/2 + thickness + 1,width/2]) {
       rotate([90,0,0]) {
         snapsWithPlate(snaps, hirthHeight + offset, 0, 2 * (hirthWidth + offset) + screwDiameter, $fn, 0, 1, screwDiameter/2);
       }
@@ -40,7 +41,7 @@ module topPartFemaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, s
   }
 }
 
-module topPartNoHirth(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset) {
+module topPartNoHirth(beamDiameter, width, screwDiameter, screwHeadDiameter, hirthWidth, thickness, offset) {
   difference() {
     union() {
       difference() {
@@ -60,7 +61,7 @@ module topPartNoHirth(beamDiameter, width, screwDiameter, hirthWidth, thickness,
         }
       }
       translate([0,beamDiameter/2 + thickness,0]) {
-        screwPart(beamDiameter, width, beamDiameter/2 + thickness, thickness, hirthWidth, offset);
+        screwPart(beamDiameter, width, screwDiameter, screwHeadDiameter, beamDiameter/2 + thickness, thickness, hirthWidth, offset);
       }
       difference() {
         cube([beamDiameter/2 + thickness, beamDiameter/2 + thickness, width]);
@@ -84,7 +85,7 @@ module topPartNoHirth(beamDiameter, width, screwDiameter, hirthWidth, thickness,
   }
 }
 
-module bottomPart(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset) {
+module bottomPart(beamDiameter, width, screwDiameter, screwHeadDiameter, hirthWidth, thickness, offset) {
   difference() {
     union() {
       difference() {
@@ -96,7 +97,7 @@ module bottomPart(beamDiameter, width, screwDiameter, hirthWidth, thickness, off
           }
         }
       }
-      screwPart(beamDiameter, width, thickness, thickness, hirthWidth, offset);
+      screwPart(beamDiameter, width, screwDiameter, screwHeadDiameter, thickness, thickness, hirthWidth, offset);
 
       // connector
       union() {
@@ -133,19 +134,19 @@ module ringPartOuter(beamDiameter, width, thickness, angle=360) {
   }
 }
 
-module screwPart(beamDiameter, width, thickness, stdThickness, hirthWidth, offset) {
+module screwPart(beamDiameter, width, screwDiameter, screwHeadDiameter, thickness, stdThickness, hirthWidth, offset) {
   rotate([90, 0, 0]) {
-    translate([(beamDiameter + screwDiameter) / 2 + stdThickness, width/2, 0]) {
+    translate([(beamDiameter + max(screwDiameter, screwHeadDiameter)) / 2 + stdThickness, width/2, 0]) {
       difference() {
         union() {
           cylinder(d=screwDiameter + 2 * (stdThickness + hirthWidth + offset), h=thickness);
           linear_extrude(height=thickness) {
             polygon(points=[
-              [-(screwDiameter / 2 + stdThickness), width/2],
-              [-(screwDiameter / 2), width/2],
+              [-(max(screwDiameter, screwHeadDiameter) / 2 + stdThickness), width/2],
+              [-(max(screwDiameter, screwHeadDiameter) / 2), width/2],
               [screwDiameter / 2 + stdThickness, 0],
-              [-(screwDiameter / 2), -width/2],
-              [-(screwDiameter / 2 + stdThickness), -width/2]
+              [-(max(screwDiameter, screwHeadDiameter) / 2), -width/2],
+              [-(max(screwDiameter, screwHeadDiameter) / 2 + stdThickness), -width/2]
             ]);
           }
         }
@@ -158,32 +159,32 @@ module screwPart(beamDiameter, width, thickness, stdThickness, hirthWidth, offse
 }
 
 // Example Modules
-module completeExample(beamADiameter, widthA, beamBDiameter, widthB, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset) {
-  translate([-((beamADiameter + screwDiameter)/2 + thickness),-((beamADiameter + offset)/2 + thickness),-widthA/2]) {
-    exampleMalePart(beamADiameter, widthA, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset);
+module completeExample(beamADiameter, widthA, beamBDiameter, widthB, hirthWidth, hirthHeight, snaps, screwDiameter, screwHeadDiameter, thickness, offset) {
+  translate([-((beamADiameter + max(screwDiameter, screwHeadDiameter))/2 + thickness),-((beamADiameter + offset)/2 + thickness),-widthA/2]) {
+    exampleMalePart(beamADiameter, widthA, hirthWidth, hirthHeight, snaps, screwDiameter, screwHeadDiameter, thickness, offset);
   }
   rotate([180,180 - 360/snaps,0]) {
-    translate([-((beamBDiameter + screwDiameter)/2 + thickness),-((beamBDiameter + offset)/2 + thickness),-widthB/2]) {
-      exampleFemalePart(beamBDiameter, widthB, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset);
+    translate([-((beamBDiameter + max(screwDiameter, screwHeadDiameter))/2 + thickness),-((beamBDiameter + offset)/2 + thickness),-widthB/2]) {
+      exampleFemalePart(beamBDiameter, widthB, hirthWidth, hirthHeight, snaps, screwDiameter, screwHeadDiameter, thickness, offset);
     }
   }
 }
 
-module exampleFemalePart(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset) {
+module exampleFemalePart(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, screwHeadDiameter, thickness, offset) {
   color("orange") {
-    topPartFemaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset);
+    topPartFemaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, screwHeadDiameter, thickness, offset);
   }
   color("yellow") {
-    bottomPart(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset);
+    bottomPart(beamDiameter, width, screwDiameter, screwHeadDiameter, hirthWidth, thickness, offset);
   }
 }
 
-module exampleMalePart(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset) {
+module exampleMalePart(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, screwHeadDiameter, thickness, offset) {
   color("Purple") {
-    topPartMaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, thickness, offset);
+    topPartMaleHirth(beamDiameter, width, hirthWidth, hirthHeight, snaps, screwDiameter, screwHeadDiameter, thickness, offset);
   }
   color("Violet") {
-    bottomPart(beamDiameter, width, screwDiameter, hirthWidth, thickness, offset);
+    bottomPart(beamDiameter, width, screwDiameter, screwHeadDiameter, hirthWidth, thickness, offset);
   }
 }
 
@@ -295,6 +296,7 @@ module snapsWithPlate(snaps, h, ct, d, res, snapfree, gpt, screw) {
 }
 
 // Example
+/*
 completeExample(
   beamADiameter,
   widthA,
@@ -306,4 +308,18 @@ completeExample(
   screwDiameter,
   thickness=3,
   offset=2
+);
+*/
+completeExample(
+  beamADiameter,
+  widthA,
+  beamBDiameter,
+  widthB,
+  hirthWidth,
+  hirthHeight,
+  snaps,
+  screwDiameter,
+  screwHeadDiameter,
+  thickness,
+  offset
 );
