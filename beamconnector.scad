@@ -149,7 +149,7 @@ module screwPart(beamDiameter, width, screwDiameter, screwHeadDiameter, thicknes
             polygon(points=[
               [-(max(screwDiameter, screwHeadDiameter) / 2 + stdThickness), width/2],
               [-(max(screwDiameter, screwHeadDiameter) / 2), width/2],
-              [max(screwDiameter, screwHeadDiameter) / 2 + stdThickness + offset, 0],
+              [max(hirthWidth, screwDiameter, screwHeadDiameter) / 2 + stdThickness + offset, 0],
               [-(max(screwDiameter, screwHeadDiameter) / 2), -width/2],
               [-(max(screwDiameter, screwHeadDiameter) / 2 + stdThickness), -width/2]
             ]);
